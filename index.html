@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JUST FOR YOU ♥</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #fff0f5 0%, #fbc2eb 100%);
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* القلوب المتساقطة في الخلفية */
+        .heart-bg {
+            position: absolute;
+            color: #ff69b4;
+            font-size: 20px;
+            opacity: 0.3;
+            animation: fall linear infinite;
+            z-index: 1;
+            user-select: none;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+            padding: 25px;
+            width: 90%;
+            max-width: 480px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(216, 27, 96, 0.15);
+        }
+
+        /* تصميم القلب الكبير النابض في المنتصف */
+        .main-heart {
+            font-size: 90px;
+            color: #d81b60;
+            margin: 10px 0;
+            display: inline-block;
+            animation: pulse 1.5s infinite ease-in-out;
+            cursor: pointer;
+            user-select: none;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.12); }
+        }
+        .main-heart.bounce {
+            animation: none;
+            transform: scale(1.3);
+            transition: transform 0.1s ease-in-out;
+        }
+
+        /* صندوق عرض الرسالة العشوائية */
+        .message-display {
+            min-height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            padding: 10px;
+        }
+
+        .message-text {
+            font-size: 1.4rem;
+            color: #4a001f;
+            line-height: 1.7;
+            font-weight: bold;
+            animation: popIn 0.4s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* تصميم زر التوليد السحري */
+        .generator-btn {
+            background: linear-gradient(45deg, #d81b60, #ff4081);
+            color: #fff;
+            border: none;
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(216, 27, 96, 0.3);
+            transition: all 0.3s ease;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .generator-btn:hover {
+            background: linear-gradient(45deg, #ff4081, #ff82c1);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(216, 27, 96, 0.4);
+        }
+
+        .generator-btn:active {
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="hearts-container"></div>
+
+    <div class="container">
+        <div class="main-heart" id="heart-icon" onclick="generateMessage()">❤️</div>
+        
+        <div class="message-display">
+            <div class="message-text" id="msg-target">اضغطي على الزر بالأسفل لتلقي رسالة من قلبي.. ✨</div>
+        </div>
+
+        <button class="generator-btn" onclick="generateMessage()">✨ اضغطي لابتسامة جديدة</button>
+    </div>
+
+    <script>
+        // مصفوفة تحتوي على الـ 12 جملة بالكامل المأخوذة من صوركِ بالتشكيل
+        const quotes = [
+            "\"لِي صَاحِبٌ يَسقِي فُؤَادِي وُدّهُ .. يَروِي يَبَاسَ القَلبِ حَتَّى يُورِقَا\"",
+            "إِنَّ أَثمَنَ هَدِيَّةٍ قَد تَنَالُهَا : «صَدِيق» عَلَى هَيئَةِ حَيَاةٍ .",
+            "صَاحِب عَن صَاحِب يِفرِق .. مُو كِل نِجمَة بِالسِّمَاء تِبرِق",
+            "هَل كَانَتِ النُّجُومُ شَبِيهَةً لِعَينَيكِ .. أَم كَانَت عَينَاكِ النُّجُومَ بِذَاتِهَا ؟",
+            "أَتَى وَكَأَنَّهُ رُوحاً لِرُوحِي.",
+            "وَعَن أَلفِ صَدِيقَةٍ تُبقِين ! أَنتِ الأَفضَلُ.",
+            "كُلُّ شَيءٍ بِجِوَارِهَا أَحَنُّ ، أَخَفُّ ، وَأَلطَفُ .",
+            "\"رَبَّاهُ فَاجْمَعْ شَمْلَنَا فِي جَنَّةٍ فِيهَا الْهَنَاءُ ، بِلَا فِرَاقٍ يَكْمُلُ\"",
+            "وَنِيسَةُ الْقَلْبِ",
+            "بَعْضُ الْأَصْدِقَاءِ أَيْضاً.. عَائِلَةٌ",
+            "... وَتَأْنَسُ النَّفْسُ بِقُرْبِ مَنْ تُحِبّ ...",
+            "وَأَنَا مُمْتَنَّةٌ لِلطَّرِيقِ ، لِلْأَيَّامِ ، لِلَّحَظَاتِ ، لِكُلِّ شَيْءٍ كَانَ سَبَبًا لِتَكُونِ : رَفِيقُ دَرْبِي الْأَعَزِّ ."
+        ];
+
+        let lastIndex = -1;
+
+        function generateMessage() {
+            const msgTarget = document.getElementById('msg-target');
+            const heartIcon = document.getElementById('heart-icon');
+            
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * quotes.length);
+            } while (randomIndex === lastIndex && quotes.length > 1);
+            
+            lastIndex = randomIndex;
+
+            heartIcon.classList.add('bounce');
+            setTimeout(() => heartIcon.classList.remove('bounce'), 100);
+
+            msgTarget.style.animation = 'none';
+            msgTarget.offsetHeight; 
+            msgTarget.innerText = quotes[randomIndex];
+            msgTarget.style.animation = 'popIn 0.4s ease-out';
+        }
+
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            for (let i = 0; i < 25; i++) {
+                let heart = document.createElement('div');
+                heart.className = 'heart-bg';
+                heart.innerText = '♥';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = Math.random() * -20 + 'vh';
+                heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
+                container.appendChild(heart);
+            }
+        }
+        createHearts();
+    </script>
+</body>
+</html>
